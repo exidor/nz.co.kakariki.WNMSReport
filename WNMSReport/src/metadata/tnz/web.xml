@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app  xmlns="http://java.sun.com/xml/ns/javaee"
+          version="2.5"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+ <display-name>WNMSREP :: nzrsdb.au.alcatel-lucent.com</display-name>
+
+ <description>
+   WNMS Report Server
+ </description>
+
+ <servlet>
+   <display-name>helloworld</display-name>
+   <servlet-name>helloworld</servlet-name>
+   <servlet-class>com.alcatel_lucent.nz.wnmsreport.web.TestServlet</servlet-class>
+ </servlet>
+ <servlet>
+   <display-name>basic</display-name>
+   <servlet-name>basic</servlet-name>
+   <servlet-class>com.alcatel_lucent.nz.wnmsreport.web.BasicReportServlet</servlet-class>
+ </servlet>
+ <servlet>
+   <display-name>report</display-name>
+   <servlet-name>report</servlet-name>
+   <servlet-class>com.alcatel_lucent.nz.wnmsreport.web.TNZReportServlet</servlet-class>
+ </servlet>
+
+ <servlet-mapping>
+   <servlet-name>helloworld</servlet-name>
+   <url-pattern>/helloworld</url-pattern>
+ </servlet-mapping>
+
+ <servlet-mapping>
+   <servlet-name>basic</servlet-name>
+   <url-pattern>/basic</url-pattern>
+ </servlet-mapping>
+
+ <servlet-mapping>
+   <servlet-name>report</servlet-name>
+   <url-pattern>/report</url-pattern>
+ </servlet-mapping>
+
+</web-app>

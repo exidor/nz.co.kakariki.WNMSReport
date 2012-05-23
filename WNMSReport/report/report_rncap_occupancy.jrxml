@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report_rncap_occupancy" language="groovy" pageWidth="535" pageHeight="252" columnWidth="535" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<template>"style_template.jrtx"</template>
+	<parameter name="rncname" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[
+		(select
+			ap, wk, occ
+		from report_rnc_apg_t
+		where id like $P{rncname}
+		union
+		select
+			a.ap||'_p' as ap, a.wk,
+			b.a+b.b*extract(epoch from a.wk) as occ
+		from report_rnc_apg_t a
+		join report_rnc_apg_regr b
+		on a.ap=b.ap and a.id=b.id
+		where a.id like $P{rncname}
+		union
+		select
+			a.ap||'_p' as ap, max(a.wk)+interval'3month' as wk,
+			b.a+b.b*extract(epoch from (max(a.wk)+interval'3month')) as occ
+		from report_rnc_apg_t a
+		join report_rnc_apg_regr b
+		on a.ap=b.ap and a.id=b.id
+		where a.id like $P{rncname}
+		group by a.ap, b.a,b.b)
+		order by ap asc,wk asc
+		]]>
+	</queryString>
+	<field name="ap" class="java.lang.String"/>
+	<field name="wk" class="java.sql.Timestamp"/>
+	<field name="occ" class="java.lang.Float"/>
+	<variable name="AP" class="java.lang.String">
+		<variableExpression><![CDATA[$F{ap}]]></variableExpression>
+	</variable>
+	<variable name="WeekStart" class="java.sql.Timestamp">
+		<variableExpression><![CDATA[$F{wk}]]></variableExpression>
+	</variable>
+	<variable name="WeekStartLabel" class="java.lang.String">
+		<variableExpression><![CDATA[java.lang.String.valueOf($F{wk}).substring(0,10)]]></variableExpression>
+	</variable>
+	<variable name="Occupancy" class="java.lang.Float">
+		<variableExpression><![CDATA[$F{occ}]]></variableExpression>
+	</variable>
+	<summary>
+		<band height="232">
+			<timeSeriesChart>
+				<chart isShowLegend="true">
+					<reportElement positionType="Float" x="0" y="0" width="535" height="232" style="style_charttitle"/>
+					<chartTitle position="Top">
+						<titleExpression><![CDATA[$P{rncname}+" AP Occupancy"]]></titleExpression>
+					</chartTitle>
+					<!--
+					<chartSubtitle>
+						<font fontName="SansSerif" size="6"/>
+						<subtitleExpression><![CDATA["combined TMU/PC/RAB occupancy plot"]]></subtitleExpression>
+					</chartSubtitle>
+					-->
+					<chartLegend position="Right"/>
+				</chart>
+				<timeSeriesDataset>
+					<timeSeries>
+						<seriesExpression><![CDATA[$V{AP}]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$V{WeekStart}]]></timePeriodExpression>
+						<valueExpression><![CDATA[$V{Occupancy}]]></valueExpression>
+						<labelExpression><![CDATA[$V{WeekStartLabel}]]></labelExpression>
+					</timeSeries>
+				</timeSeriesDataset>
+				<timeSeriesPlot isShowLines="true" isShowShapes="false">
+					<plot labelRotation="90.0">
+						<seriesColor seriesOrder="0" color="#250EF0"/>
+						<seriesColor seriesOrder="1" color="#A8A3D1"/>
+						<seriesColor seriesOrder="2" color="#0FA10A"/>
+						<seriesColor seriesOrder="3" color="#9BC799"/>
+						<seriesColor seriesOrder="4" color="#DB620B"/>
+						<seriesColor seriesOrder="5" color="#E8BFA2"/>
+					</plot>
+					<timeAxisLabelExpression><![CDATA["Week Beginning"]]></timeAxisLabelExpression>
+					<timeAxisFormat>
+						<axisFormat>
+							<labelFont>
+								<font fontName="SansSerif" size="6"/>
+							</labelFont>
+							<tickLabelFont>
+								<font fontName="SansSerif" size="6"/>
+							</tickLabelFont>
+						</axisFormat>
+					</timeAxisFormat>
+					<valueAxisLabelExpression><![CDATA["% Occupancy"]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont>
+								<font fontName="SansSerif" size="8"/>
+							</labelFont>
+							<tickLabelFont>
+								<font fontName="SansSerif" size="8"/>
+							</tickLabelFont>
+						</axisFormat>
+					</valueAxisFormat>
+				</timeSeriesPlot>
+			</timeSeriesChart>
+		</band>
+	</summary>
+</jasperReport>

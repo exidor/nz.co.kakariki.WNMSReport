@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="BCI" default="build" basedir=".">
+	<description>
+		Business Case Inputs for Radio Planning - Capacity Calculator
+  </description>
+
+	<!--
+
+		Targets =======
+		init : Initialises, builds dirs and does tstamp
+		build : Compiles base clases
+		pack : Builds a Jar archive
+		docs : Creates Javadoc API docs
+		run : Runs Jar archive as an executable
+		backup : Saves critical src and doc to backup
+		clean : Cleans base classes
+
+		test.run : Run test cases
+		test.junit : Tests for existence of JUnit
+		test.build : Build test classes
+		test.report : Generates test run report
+		test.clean : Cleans test classes
+	-->
+
+	<!-- ========== -->
+	<!-- PROPERTIES -->
+	<!-- ========== -->
+
+	<property file="build.properties" />
+	<property file="app.properties" />
+
+	<property name="base.dir" value="." />
+	<property name="src.dir" value="${base.dir}/src" />
+	<property name="build.dir" value="${base.dir}/build" />
+	<property name="test.dir" value="${base.dir}/test" />
+	<property name="dist.dir" value="${base.dir}/dist" />
+	<property name="lib.dir" value="${base.dir}/lib" />
+	<property name="data.dir" value="${base.dir}/data" />
+	<property name="conf.dir" value="${base.dir}/conf" />
+	<property name="report.dir" value="${base.dir}/report" />
+	<property name="image.dir" value="${base.dir}/image" />
+	<property name="docs.dir" value="${base.dir}/docs" />
+	<property name="backup.dir" value="${base.dir}/backup" />
+	<property name="deploy.dir" value="/opt/jboss/server/default/deploy" />
+
+	<property name="verb" value="false" />
+
+	<path id="path.java" path="/opt/java/bin" />
+	<path id="path.junit" path="${path.java}/junit4.0/junit-4.0.jar" />
+	<path id="path.postgres" path="${lib.dir}/postgresql-8.0-315.jdbc3.jar" />
+
+
+
+	<!--
+  <splash imageurl="./lucent_logo.gif" showduration="5000"/>
+  -->
+
+	<!-- ========= -->
+	<!-- CLASSPATH -->
+	<!-- ========= -->
+
+	<path id="classpath.base">
+		<pathelement path="${classpath}" />
+		<pathelement location="${base.dir}" />
+	</path>
+
+	<path id="classpath.test">
+		<pathelement path="${classpath.base}" />
+		<pathelement path="${path.junit}" />
+		<pathelement location="${build.dir}" />
+	</path>
+
+	<path id="classpath.run">
+		<pathelement path="${classpath.base}" />
+		<pathelement location="${build.dir}" />
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+
+	<!-- =========================== -->
+	<!--           TARGETS           -->
+	<!-- =========================== -->
+
+	<!-- ==== -->
+	<!-- INIT -->
+	<!-- ==== -->
+	<target name="init" description="Initialise build environment">
+		<!-- Create the build directory structure -->
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${test.dir}" />
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${lib.dir}" />
+		<mkdir dir="${data.dir}" />
+		<mkdir dir="${conf.dir}" />
+		<mkdir dir="${report.dir}" />
+		<mkdir dir="${image.dir}" />
+		<mkdir dir="${docs.dir}" />
+		<mkdir dir="${backup.dir}" />
+		<tstamp />
+	</target>
+
+	<!-- ===== -->
+	<!-- BUILD -->
+	<!-- ===== -->
+
+	<target name="build" depends="init" description="Build primary classes">
+		<!-- run javac to compile the source files -->
+		<javac srcdir="${src.dir}" destdir="${build.dir}">
+			<classpath refid="classpath.run" />
+		</javac>
+	</target>
+
+	<!-- ==== -->
+	<!-- TEST -->
+	<!-- ==== -->
+
+	<target name="test" depends="test.run" description="test.run alias" />
+
+	<target name="test.junit" description="Test for JUnit in classpath">
+		<available property="junit.present" classname="junit.framework.TestCase" />
+	</target>
+
+	<target name="test.build" depends="test.junit, build"
+		description="Builds the Test classes">
+		<!-- run javac to compile the test source files -->
+		<javac srcdir="${test.dir}" destdir="${build.dir}" verbose="${verb}">
+			<classpath refid="classpath.test" />
+		</javac>
+	</target>
+
+	<target name="test.clean" depends="backup" description="Cleans the test classes">
+		<delete verbose="${verb}">
+			<fileset dir="${build.dir}" includes="**/*_Test.class" />
+			<fileset dir="${base.dir}" includes="TEST-*.xml" />
+		</delete>
+	</target>
+
+	<target name="test.run" depends="test.build" description="Runs the test suite">
+		<junit printsummary="yes" fork="yes" haltonfailure="no">
+			<classpath refid="classpath.test" />
+			<formatter type="xml" />
+			<batchtest>
+				<fileset dir="${build.dir}">
+					<include name="**/*_Test*" />
+				</fileset>
+			</batchtest>
+			<!--<test name="Cost.CEMain_Test"/>-->
+		</junit>
+	</target>
+
+	<!-- ====== -->
+	<!-- REPORT -->
+	<!-- ====== -->
+
+	<target name="report" depends="test.run"
+		description="Generates Success/Failure report on test suite">
+		<junitreport todir="${report.dir}">
+			<fileset dir=".">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${report.dir}" />
+		</junitreport>
+	</target>
+
+	<!-- ======= -->
+	<!-- PACKAGE -->
+	<!-- ======= -->
+
+	<target name="pack" depends="pack.tnz, pack.gta"/>
+
+	<target name="pack.tnz" depends="build" description="Packages web/local client into WAR">
+			<war destfile="${dist.dir}/${proj.tnz.pack}" webxml="${src.dir}/${web.tnz.conf}">
+				<classes dir="${build.dir}" />
+				<classes dir="${conf.dir}" />
+				<fileset dir="${src.dir}/html" />
+				<fileset dir="${src.dir}/jsp" />
+				<lib dir="${lib.dir}">
+					<exclude name="servlet*.jar"/>
+				<!--  puts the jrxml in the web-inf dir
+				<webinf dir="${report.dir}">
+					<include name="**/*.jrxml"/>
+				</webinf>
+				-->
+				</lib>
+				<zipfileset dir="${report.dir}" prefix="report" />
+				<zipfileset dir="${image.dir}" prefix="image" />
+			</war>
+		</target>
+
+	<target name="pack.gta" depends="build" description="Packages web/local client into WAR">
+	<war destfile="${dist.dir}/${proj.gta.pack}" webxml="${src.dir}/${web.gta.conf}">
+		<classes dir="${build.dir}" />
+		<fileset dir="${src.dir}/html" />
+		<fileset dir="${src.dir}/jsp" />
+		<lib dir="${lib.dir}">
+			<exclude name="servlet*.jar"/>
+			<!--  puts the jrxml in the web-inf dir
+			<webinf dir="${report.dir}">
+				<include name="**/*.jrxml"/>
+			</webinf>
+			-->
+		</lib>
+		<zipfileset dir="${report.dir}" prefix="report" />
+		<zipfileset dir="${image.dir}" prefix="image" />
+	</war>
+</target>
+
+	<!-- ====== -->
+	<!-- DEPLOY -->
+	<!-- ====== -->
+
+	<target name="deploy" depends="deploy.nzrsdb"/>
+
+	<target name="deploy.nzrsdb" depends="deploy.164"/>
+
+	<target name="deploy.33" depends="pack"
+		description="Copies WAR to Tomcat deploy directory">
+		<echo message="Deploying to Tomcat 6.0 - ${deploy.dir}" />
+		<copy file="${dist.dir}/${proj.pack}" todir="${deploy.dir}" />
+	</target>
+
+	<target name="deploy.48" depends="pack"
+			description="FTP WAR to DB48">
+			<ftp server="139.188.126.204"
+				remotedir="upload"
+			    userid="anonymous"
+			    password=""
+			    depends="yes">
+			    	<fileset dir="dist"/>
+			</ftp>
+		</target>
+
+	<target name="deploy.164" depends="pack"
+		description="FTP WAR to NZRSDB">
+		<ftp server="139.188.42.164"
+       		remotedir="~/wnmsreport/"
+       		userid="jnramsay"
+       		password="friday123"
+       		depends="yes">
+    			<fileset dir="dist"/>
+  		</ftp>
+	</target>
+
+	<!-- remotedir="/var/apache/tomcat55/webapps/" -->
+
+
+
+	<!-- ==== -->
+	<!-- DOCS -->
+	<!-- ==== -->
+
+
+	<target name="docs" depends="build">
+		<!-- create javadocs -->
+		<javadoc packagenames="com.alcatel_lucent.nz.wnmsreport.*"
+			sourcepath="${src.dir}" defaultexcludes="yes" destdir="${docs.dir}"
+			author="true" version="true" use="true"
+			windowtitle="WNMSReport Capcity Reporting Webapp API Documentation Version: ${version}" />
+
+	</target>
+
+	<!-- ======= -->
+	<!-- RUN/USE -->
+	<!-- ======= -->
+
+	<target name="run" depends="pack">
+		<!-- run the class -->
+		<java jar="${dist.dir}/${proj.pack}" fork="true">
+			<classpath refid="classpath.run" />
+			<arg value="${proj.args}" />
+		</java>
+	</target>
+
+	<!-- ====== -->
+	<!-- BACKUP -->
+	<!-- ====== -->
+
+	<target name="backup" description="Save locations/files you may need later">
+		<echo message="Backing Up to ${backup.dir}" />
+		<copy todir="${backup.dir}">
+			<fileset dir="${src.dir}" />
+			<fileset dir="${test.dir}" />
+			<fileset dir="${data.dir}" />
+			<fileset dir="${report.dir}" />
+			<fileset dir="${docs.dir}">
+				<exclude name="**/*.htm*" />
+			</fileset>
+			<globmapper from="*" to="*.bak" />
+		</copy>
+	</target>
+
+	<!-- ===== -->
+	<!-- CLEAN -->
+	<!-- ===== -->
+
+	<target name="clean" depends="backup,test.clean">
+		<echo message="Cleaning build, dist and docs*.html" />
+		<!-- Delete the ${build} and ${lib} directory trees -->
+		<delete dir="${build.dir}/*" />
+		<delete dir="${dist.dir}/*" />
+		<delete>
+			<fileset dir="${docs.dir}" includes="**/*.html" />
+			<!-- scary
+				<fileset dir="${src.dir}" includes="**/*" excludes="**/*.java"/>
+			-->
+		</delete>
+	</target>
+
+	<!-- ========= -->
+	<!-- LISTPROPS -->
+	<!-- ========= -->
+
+	<target name="list" description="Display the Application properties">
+		<echo message="Project Information" />
+		<echo message="-------------------" />
+		<echo message="proj.name    : ${proj.name}" />
+		<echo message="proj.pkg     : ${proj.pkg}" />
+		<echo message="proj.main    : ${proj.main}" />
+		<echo message="proj.args    : ${proj.args}" />
+		<echo message="proj.pack    : ${proj.pack}" />
+		<echo message="proj.version : ${proj.version}" />
+		<echo message="" />
+		<echo message="dev.name     : ${dev.name}" />
+		<echo message="dev.email    : ${dev.email}" />
+	</target>
+
+</project>
+

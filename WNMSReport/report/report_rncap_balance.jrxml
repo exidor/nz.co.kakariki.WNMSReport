@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report_rncap_balance" language="groovy" pageWidth="535" pageHeight="213" columnWidth="535" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<template>"style_template.jrtx"</template>
+	<parameter name="rncname" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select
+			ap, wk, diff
+		from report_rnc_apg_bal_t
+		where id like $P{rncname}
+		order by ap asc, wk asc]]>
+	</queryString>
+	<field name="ap" class="java.lang.String"/>
+	<field name="wk" class="java.sql.Timestamp"/>
+	<field name="diff" class="java.lang.Float"/>
+	<variable name="AP" class="java.lang.String">
+		<variableExpression><![CDATA[$F{ap}]]></variableExpression>
+	</variable>
+	<variable name="WeekStart" class="java.sql.Timestamp">
+		<variableExpression><![CDATA[$F{wk}]]></variableExpression>
+	</variable>
+	<variable name="WeekStartLabel" class="java.lang.String">
+		<variableExpression><![CDATA[java.lang.String.valueOf($F{wk}).substring(0,10)]]></variableExpression>
+	</variable>
+	<variable name="Imbalance" class="java.lang.Float">
+		<variableExpression><![CDATA[$F{diff}]]></variableExpression>
+	</variable>
+	<summary>
+		<band height="193">
+			<timeSeriesChart>
+				<chart isShowLegend="true">
+					<reportElement positionType="Float" x="0" y="0" width="535" height="193" style="style_charttitle"/>
+					<chartTitle position="Top">
+						<titleExpression><![CDATA[$P{rncname}+" AP Imbalance"]]></titleExpression>
+					</chartTitle>
+					<!--
+					<chartSubtitle>
+						<font fontName="SansSerif" size="6"/>
+						<subtitleExpression><![CDATA["combined TMU/PC/RAB imbalance plot"]]></subtitleExpression>
+					</chartSubtitle>
+					-->
+					<chartLegend position="Right"/>
+				</chart>
+				<timeSeriesDataset>
+					<timeSeries>
+						<seriesExpression><![CDATA[$V{AP}]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$V{WeekStart}]]></timePeriodExpression>
+						<valueExpression><![CDATA[$V{Imbalance}]]></valueExpression>
+						<labelExpression><![CDATA[$V{WeekStartLabel}]]></labelExpression>
+					</timeSeries>
+				</timeSeriesDataset>
+				<timeSeriesPlot isShowLines="true" isShowShapes="false">
+					<plot labelRotation="90.0">
+						<seriesColor seriesOrder="0" color="#250EF0"/>
+						<seriesColor seriesOrder="2" color="#0FA10A"/>
+						<seriesColor seriesOrder="3" color="#DB620B"/>
+					</plot>
+					<timeAxisLabelExpression><![CDATA["Week Beginning"]]></timeAxisLabelExpression>
+					<timeAxisFormat>
+						<axisFormat>
+							<labelFont>
+								<font fontName="SansSerif" size="6"/>
+							</labelFont>
+							<tickLabelFont>
+								<font fontName="SansSerif" size="6"/>
+							</tickLabelFont>
+						</axisFormat>
+					</timeAxisFormat>
+					<valueAxisLabelExpression><![CDATA["% Imbalance (Daily_Avg_Diff / AP)"]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont>
+								<font fontName="SansSerif" size="8"/>
+							</labelFont>
+							<tickLabelFont>
+								<font fontName="SansSerif" size="8"/>
+							</tickLabelFont>
+						</axisFormat>
+					</valueAxisFormat>
+				</timeSeriesPlot>
+			</timeSeriesChart>
+		</band>
+	</summary>
+</jasperReport>

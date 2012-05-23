@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report_rncap_data" language="groovy" pageWidth="535" pageHeight="135" columnWidth="535" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<template>"style_template.jrtx"</template>
+	<parameter name="rncname" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[
+		select a.ap, a.dy as ydy, b.dy as wdy, a.aocc as curr, b.aocc as prev
+		from (
+			select
+				ap, dy, round(aocc::numeric,1) as aocc
+			from report_borg_daily_t
+			where id like $P{rncname}
+			and dy like date_trunc('day',now()::timestamp-interval'1day')
+		) a
+		join (
+			select
+				ap, dy, round(aocc::numeric,1) as aocc
+			from report_borg_daily_t
+			where id like $P{rncname}
+			and dy like date_trunc('day',now()::timestamp-interval'8day')
+		) b
+		on a.ap = b.ap
+		order by ap desc
+		]]>
+	</queryString>
+	<field name="ap" class="java.lang.String"/>
+	<field name="ydy" class="java.sql.Timestamp"/>
+	<field name="wdy" class="java.sql.Timestamp"/>
+	<field name="prev" class="java.lang.Float"/>
+	<field name="curr" class="java.lang.Float"/>
+	<variable name="AP" class="java.lang.String">
+		<variableExpression><![CDATA[$F{ap}]]></variableExpression>
+	</variable>
+	<variable name="WeekStart" class="java.sql.Timestamp">
+		<variableExpression><![CDATA[$F{ydy}]]></variableExpression>
+	</variable>
+	<variable name="WeekStartLabel" class="java.lang.String">
+		<variableExpression><![CDATA[java.lang.String.valueOf($F{ydy}).substring(0,10)]]></variableExpression>
+	</variable>
+	<variable name="LastWeekStart" class="java.sql.Timestamp">
+		<variableExpression><![CDATA[$F{wdy}]]></variableExpression>
+	</variable>
+	<variable name="LastWeekStartLabel" class="java.lang.String">
+		<variableExpression><![CDATA[java.lang.String.valueOf($F{wdy}).substring(0,10)]]></variableExpression>
+	</variable>
+	<variable name="PreviousPO" class="java.lang.Float">
+		<variableExpression><![CDATA[$F{prev}]]></variableExpression>
+	</variable>
+	<variable name="CurrentPO" class="java.lang.Float">
+		<variableExpression><![CDATA[$F{curr}]]></variableExpression>
+	</variable>
+	<pageHeader>
+		<band height="20">
+			<staticText>
+				<reportElement x="100" y="0" width="100" height="20" style="style_tableheader"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Processor Type]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="200" y="0" width="120" height="20" style="style_tableheader"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["PO (1 Week Ago)"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="320" y="0" width="120" height="20" style="style_tableheader"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["PO (Yesterday)"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="14">
+			<textField>
+				<reportElement x="100" y="0" width="100" height="14" style="style_tablerow"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{AP}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="200" y="0" width="120" height="14" style="style_tablerow"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{PreviousPO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="320" y="0" width="120" height="14" style="style_tablerow"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{CurrentPO}]]></textFieldExpression>
+			</textField>
+
+		</band>
+	</detail>
+</jasperReport>

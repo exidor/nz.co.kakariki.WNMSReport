@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report_vccutilisation_networksummary" language="groovy" pageWidth="595" pageHeight="842" columnWidth="534" leftMargin="30" rightMargin="30" topMargin="30" bottomMargin="30">
+	<template>"style_template.jrtx"</template>
+	<parameter name="logo" class="java.lang.String"/>
+	<parameter name="static" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[
+		select distinct plane
+        from report_vcc_dmax_t
+		order by plane asc
+        ]]>
+	</queryString>
+	<field name="plane" class="java.lang.String"/>
+	<variable name="Plane" class="java.lang.String">
+		<variableExpression><![CDATA[$F{plane}]]></variableExpression>
+	</variable>
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band height="38">
+			<frame>
+				<reportElement mode="Opaque" x="0" y="0" width="535" height="37" backcolor="#FFFFFF"/>
+				<staticText>
+					<reportElement x="0" y="0" width="356" height="37" forecolor="#000000" style="style_reportheader"/>
+					<text><![CDATA[VCC Utilisation Summary Report]]></text>
+				</staticText>
+				<image>
+					<reportElement x="394" y="0" width="141" height="37"/>
+					<imageExpression class="java.lang.String"><![CDATA[$P{logo}]]></imageExpression>
+				</image>
+			</frame>
+		</band>
+	</title>
+	<pageHeader>
+		<band/>
+	</pageHeader>
+	<detail>
+		<band height="280">
+			<textField>
+				<reportElement mode="Opaque" x="0" y="0" width="535" height="20" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true" />
+				</textElement>
+				<textFieldExpression><![CDATA["VCC Utilisation Network Summary Report"]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="0" y="20" width="535" height="260"/>
+				<subreportParameter name="plane">
+					<subreportParameterExpression><![CDATA[$V{Plane}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA["report_vccutilisation_networksummarychart.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="17">
+			<textField>
+				<reportElement mode="Opaque" x="200" y="0" width="335" height="17" backcolor="#FFFFFF" style="style_charttitle"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="0" width="200" height="17" style="style_charttitle"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="80">
+			<staticText>
+				<reportElement x="0" y="0" width="535" height="25"	style="style_tableheader" />
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true" />
+				</textElement>
+				<text><![CDATA[Definitions]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="25" width="535" height="55"	style="style_tableheader" />
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10" isBold="false" />
+				</textElement>
+				<text>
+					<![CDATA[
+					Chart utilisation lines represent the daily maximum of the VCC cell count divided by the respective line rate with both Tx and Rx paths averaged across all RNCs. Where multiple rates are present the line is the maximum utilisation per Iu Type for either the control or user plane.
+					]]>
+				</text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

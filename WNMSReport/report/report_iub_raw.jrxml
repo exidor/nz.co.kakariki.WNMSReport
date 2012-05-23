@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report_raw_iub" language="groovy" pageWidth="595" pageHeight="842" columnWidth="360" leftMargin="30" rightMargin="30" topMargin="30" bottomMargin="30">
+	<property name="ireport.zoom" value="0.8264462809917451"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="logo" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select id, ima_rcvd_amx, ima_rcvd_aav, ima_sent_amx, ima_sent_aav
+from report_iub_raw_t;]]>
+	</queryString>
+	<field name="id" class="java.lang.String"/>
+	<field name="ima_rcvd_amx" class="java.lang.Double"/>
+	<field name="ima_rcvd_aav" class="java.lang.Double"/>
+	<field name="ima_sent_amx" class="java.lang.Double"/>
+	<field name="ima_sent_aav" class="java.lang.Double"/>
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band height="108">
+			<staticText>
+				<reportElement x="0" y="0" width="180" height="24"/>
+				<textElement>
+					<font fontName="SansSerif" size="14" isBold="true" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[IuB Raw]]></text>
+			</staticText>
+			<image>
+				<reportElement x="420" y="0" width="115" height="42"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{logo}]]></imageExpression>
+			</image>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="0" y="24" width="180" height="18"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="68" width="60" height="40" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="60" y="68" width="60" height="40" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Max  Ima Received]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="120" y="68" width="60" height="40" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Avg Ima Received]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="180" y="68" width="60" height="40" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Max Ima Sent]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="240" y="68" width="60" height="40" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Avg Ima Sent]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="14">
+			<textField>
+				<reportElement x="0" y="0" width="60" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{id}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="60" y="0" width="60" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$F{ima_rcvd_amx}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="120" y="0" width="60" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$F{ima_rcvd_aav}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="180" y="0" width="60" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$F{ima_sent_amx}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="240" y="0" width="60" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$F{ima_sent_aav}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

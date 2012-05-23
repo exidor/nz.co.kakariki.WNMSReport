@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report_vccutilisationiur" language="groovy" pageWidth="595" pageHeight="842" columnWidth="534" leftMargin="30" rightMargin="30" topMargin="30" bottomMargin="30">
+	<template>"style_template.jrtx"</template>
+	<parameter name="logo" class="java.lang.String"/>
+	<parameter name="static" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[
+		select distinct rid,rx_rate,plane
+        from report_vcc_dmax_t
+        where iu like 'IuR'
+		order by rid,rx_rate,plane asc
+        ]]>
+	</queryString>
+	<field name="rid" class="java.lang.String"/>
+	<field name="rx_rate" class="java.lang.Integer"/>
+	<field name="plane" class="java.lang.String"/>
+	
+	<variable name="RNC" class="java.lang.String">
+		<variableExpression><![CDATA[$F{rid}]]></variableExpression>
+	</variable>
+	<variable name="Rate" class="java.lang.Integer">
+		<variableExpression><![CDATA[$F{rx_rate}]]></variableExpression>
+	</variable>
+	<variable name="Plane" class="java.lang.String">
+		<variableExpression><![CDATA[$F{plane}]]></variableExpression>
+	</variable>
+	
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band height="38">
+			<frame>
+				<reportElement mode="Opaque" x="0" y="0" width="535" height="37" backcolor="#FFFFFF"/>
+				<staticText>
+					<reportElement x="0" y="0" width="356" height="37" forecolor="#000000" style="style_reportheader"/>
+					<text><![CDATA[VCC IuR Utilisation Report]]></text>
+				</staticText>
+				<image>
+					<reportElement x="394" y="0" width="141" height="37"/>
+					<imageExpression class="java.lang.String"><![CDATA[$P{logo}]]></imageExpression>
+				</image>
+			</frame>
+		</band>
+	</title>
+	<pageHeader>
+		<band/>
+	</pageHeader>
+	<detail>
+		<band height="300">
+			<textField>
+				<reportElement mode="Opaque" x="0" y="0" width="535" height="20" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true" />
+				</textElement>
+				<textFieldExpression><![CDATA["VCC Utilisation Report for "+$V{RNC}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="0" y="20" width="535" height="280"/>
+				<subreportParameter name="rncname">
+					<subreportParameterExpression><![CDATA[$V{RNC}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="rate">
+					<subreportParameterExpression><![CDATA[$V{Rate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="plane">
+					<subreportParameterExpression><![CDATA[$V{Plane}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA["report_vccutilisationiur_chart.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="17">
+			<textField>
+				<reportElement mode="Opaque" x="200" y="0" width="335" height="17" backcolor="#FFFFFF" style="style_charttitle"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="0" width="200" height="17" style="style_charttitle"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="630">
+			<staticText>
+				<reportElement x="0" y="0" width="535" height="25"	style="style_tableheader" />
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true" />
+				</textElement>
+				<text><![CDATA[Definitions]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="25" width="535" height="100"	style="style_tableheader" />
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10" isBold="false" />
+				</textElement>
+				<text>
+					<![CDATA[
+						 1. Rx and Tx Maximum Utilisation values are calculated from VCC Cell Ingress and Egress respectively and divided by their representative data rate. VM?
+						 2. Raw data supplied from WNMS daily at hourly resolution. Config data processed from WiPS Snapshot weekly (NB. Possible config data delay)
+						 3. Generated value is then; maximum hourly utilisation per day
+					]]>
+				</text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="125" width="535" height="25" style="style_tableheader" />
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true" />
+				</textElement>
+				<text><![CDATA[Data]]></text>
+			</staticText>
+			<subreport>
+					<reportElement x="0" y="150" width="535" height="480"/>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression class="java.lang.String"><![CDATA["report_vccutilisationiur_table.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</summary>
+</jasperReport>

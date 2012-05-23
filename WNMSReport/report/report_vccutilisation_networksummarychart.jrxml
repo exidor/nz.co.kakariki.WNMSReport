@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report_vccutilisation_networksummarychart" language="groovy" pageWidth="535" pageHeight="400" columnWidth="535" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<template>"style_template.jrtx"</template>
+	<parameter name="plane" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[
+		select dy,iu,50*max((rxmu+txmu)) as mxu 
+		from report_vcc_dmax_t
+		where plane like $P{plane}
+		group by iu,dy
+		order by iu,dy
+		]]>
+	</queryString>
+	<field name="dy" class="java.sql.Timestamp"/>
+	<field name="iu" class="java.lang.String"/>
+	<field name="mxu" class="java.lang.Float"/>
+
+	<variable name="Day" class="java.sql.Timestamp">
+		<variableExpression><![CDATA[$F{dy}]]></variableExpression>
+	</variable>
+	<variable name="IuType" class="java.lang.String">
+		<variableExpression><![CDATA[$F{iu}]]></variableExpression>
+	</variable>	
+	<variable name="MaxUtil" class="java.lang.Float">
+		<variableExpression><![CDATA[$F{mxu}]]></variableExpression>
+	</variable>	
+
+	<summary>
+		<band height="260">
+			<timeSeriesChart>
+				<chart isShowLegend="true" customizerClass="com.alcatel_lucent.nz.wnmsreport.chart.TimeSeriesIuRChartCustomiser">
+					<reportElement positionType="Float" x="0" y="0" width="535" height="260" style="style_charttitle"/>
+					<chartTitle position="Top">
+						<titleExpression><![CDATA["Max Utilisation for "+($P{plane}.equals('CP')?"Control":"User")+" Plane"]]></titleExpression>
+					</chartTitle>
+					<!--
+					<chartSubtitle>
+						<font fontName="SansSerif" size="6"/>
+						<subtitleExpression><![CDATA["combined TMU/PC/RAB occupancy plot"]]></subtitleExpression>
+					</chartSubtitle>
+					-->
+					<chartLegend position="Right"><font size="8"/></chartLegend>
+				</chart>
+				<timeSeriesDataset>
+					<timeSeries>
+						<seriesExpression><![CDATA["VCC $P{plane} Thr"]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$V{Day}]]></timePeriodExpression>
+						<valueExpression><![CDATA[($P{plane}.equals('CP')?40:70)]]></valueExpression>
+					</timeSeries>
+					<timeSeries>
+						<seriesExpression><![CDATA[$V{IuType}]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$V{Day}]]></timePeriodExpression>
+						<valueExpression><![CDATA[$V{MaxUtil}]]></valueExpression>
+						<labelExpression><![CDATA[$V{Day}]]></labelExpression>
+					</timeSeries>
+				</timeSeriesDataset>
+				<timeSeriesPlot isShowLines="true" isShowShapes="false">
+					<plot labelRotation="90.0">
+						<seriesColor seriesOrder="0" color="#FF0000"/><!-- bright threshold red -->
+						
+						<!-- blue -->
+						<seriesColor seriesOrder="2" color="#1F78B4"/>
+						
+						<!-- green -->
+						<seriesColor seriesOrder="4" color="#33A02C"/>
+						
+						<!-- red -->
+						<seriesColor seriesOrder="6" color="#E31A1C"/>
+
+					</plot>
+					<timeAxisLabelExpression><![CDATA["Date"]]></timeAxisLabelExpression>
+					<timeAxisFormat>
+						<axisFormat>
+							<labelFont>
+								<font fontName="SansSerif" size="8"/>
+							</labelFont>
+							<tickLabelFont>
+								<font fontName="SansSerif" size="8"/>
+							</tickLabelFont>
+						</axisFormat>
+					</timeAxisFormat>
+					<valueAxisLabelExpression><![CDATA["% Utilisation"]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont>
+								<font fontName="SansSerif" size="8"/>
+							</labelFont>
+							<tickLabelFont>
+								<font fontName="SansSerif" size="8"/>
+							</tickLabelFont>
+						</axisFormat>
+					</valueAxisFormat>
+					<rangeAxisMinValueExpression>0</rangeAxisMinValueExpression>
+					<rangeAxisMaxValueExpression>$P{plane}.equals('CP')?70:100</rangeAxisMaxValueExpression>
+				</timeSeriesPlot>
+			</timeSeriesChart>
+		</band>
+	</summary>
+</jasperReport>

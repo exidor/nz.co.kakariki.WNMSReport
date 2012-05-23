@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report_rncap_borgdaily_occupancy" language="groovy" pageWidth="535" pageHeight="252" columnWidth="535" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<template>"style_template.jrtx"</template>
+	<parameter name="rncname" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[
+		select
+			ap, dy, aocc
+		from report_borg_daily_t
+		where id like $P{rncname}
+		order by ap desc
+		]]>
+	</queryString>
+	<field name="ap" class="java.lang.String"/>
+	<field name="dy" class="java.sql.Timestamp"/>
+	<field name="aocc" class="java.lang.Float"/>
+	<variable name="AP" class="java.lang.String">
+		<variableExpression><![CDATA[$F{ap}]]></variableExpression>
+	</variable>
+	<variable name="Date" class="java.sql.Timestamp">
+		<variableExpression><![CDATA[$F{dy}]]></variableExpression>
+	</variable>
+	<variable name="DateLabel" class="java.lang.String">
+		<variableExpression><![CDATA[java.lang.String.valueOf($F{dy}).substring(0,10)]]></variableExpression>
+	</variable>
+	<variable name="Occupancy" class="java.lang.Float">
+		<variableExpression><![CDATA[$F{aocc}]]></variableExpression>
+	</variable>
+	<summary>
+		<band height="232">
+			<timeSeriesChart>
+				<chart isShowLegend="true">
+					<reportElement positionType="Float" x="0" y="0" width="535" height="232" style="style_charttitle"/>
+					<chartTitle position="Top">
+						<titleExpression><![CDATA[$P{rncname}+" AP Daily Occupancy"]]></titleExpression>
+					</chartTitle>
+					<!--
+					<chartSubtitle>
+						<font fontName="SansSerif" size="6"/>
+						<subtitleExpression><![CDATA["combined TMU/PC/RAB occupancy plot"]]></subtitleExpression>
+					</chartSubtitle>
+					-->
+					<chartLegend position="Right"/>
+				</chart>
+				<timeSeriesDataset>
+					<timeSeries>
+						<seriesExpression><![CDATA["RAB Thr"]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$V{Date}]]></timePeriodExpression>
+						<valueExpression><![CDATA[80]]></valueExpression>
+					</timeSeries>
+					<timeSeries>
+						<seriesExpression><![CDATA["TMU/PC Thr"]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$V{Date}]]></timePeriodExpression>
+						<valueExpression><![CDATA[70]]></valueExpression>
+					</timeSeries>
+					<timeSeries>
+						<seriesExpression><![CDATA[$V{AP}]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$V{Date}]]></timePeriodExpression>
+						<valueExpression><![CDATA[$V{Occupancy}]]></valueExpression>
+						<labelExpression><![CDATA[$V{DateLabel}]]></labelExpression>
+					</timeSeries>
+				</timeSeriesDataset>
+				<timeSeriesPlot isShowLines="true" isShowShapes="false">
+					<plot labelRotation="90.0">
+						<seriesColor seriesOrder="0" color="#FF0000"/>
+						<seriesColor seriesOrder="1" color="#FDD017"/>
+						<seriesColor seriesOrder="2" color="#B93B8F"/>
+						<seriesColor seriesOrder="3" color="#F9B7FF"/>
+						<seriesColor seriesOrder="4" color="#736AFF"/>
+						<seriesColor seriesOrder="5" color="#52D017"/>
+					</plot>
+					<timeAxisLabelExpression><![CDATA["Date"]]></timeAxisLabelExpression>
+					<timeAxisFormat>
+						<axisFormat>
+							<labelFont>
+								<font fontName="SansSerif" size="6"/>
+							</labelFont>
+							<tickLabelFont>
+								<font fontName="SansSerif" size="6"/>
+							</tickLabelFont>
+						</axisFormat>
+					</timeAxisFormat>
+					<valueAxisLabelExpression><![CDATA["Daily Occupancy MAX(5min)"]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont>
+								<font fontName="SansSerif" size="8"/>
+							</labelFont>
+							<tickLabelFont>
+								<font fontName="SansSerif" size="8"/>
+							</tickLabelFont>
+						</axisFormat>
+					</valueAxisFormat>
+					<rangeAxisMinValueExpression>0</rangeAxisMinValueExpression>
+					<rangeAxisMaxValueExpression>100</rangeAxisMaxValueExpression>
+				</timeSeriesPlot>
+			</timeSeriesChart>
+		</band>
+	</summary>
+</jasperReport>

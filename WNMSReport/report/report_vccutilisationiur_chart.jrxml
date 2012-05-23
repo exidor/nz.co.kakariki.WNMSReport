@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report_vccutilisationiur_chart" language="groovy" pageWidth="535" pageHeight="400" columnWidth="535" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<template>"style_template.jrtx"</template>
+	<parameter name="rncname" class="java.lang.String"/>
+	<parameter name="rate" class="java.lang.Integer"/>
+	<parameter name="plane" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[
+		select * from
+		(select 
+		dy,
+		dest||'/Rx' as dd,
+		max(rxmu)*100 as max_util
+		from report_vcc_dmax_t 
+		where rid like $P{rncname} 
+		and rx_rate = $P{rate}
+		and iu like 'IuR' 
+		and plane like $P{plane}
+		group by dd,dy
+		
+		union
+		
+		select 
+		dy,
+		dest||'/Tx' as dd,
+		max(txmu)*100 as max_util
+		from report_vcc_dmax_t 
+		where rid like $P{rncname} 
+		and tx_rate = $P{rate}
+		and iu like 'IuR' 
+		and plane like $P{plane}
+		group by dd,dy
+		) a 
+		
+		order by dd,dy
+		]]>
+	</queryString>
+	<field name="dy" class="java.sql.Timestamp"/>
+	<field name="dd" class="java.lang.String"/>
+	<field name="max_util" class="java.lang.Float"/>
+
+	<variable name="Day" class="java.sql.Timestamp">
+		<variableExpression><![CDATA[$F{dy}]]></variableExpression>
+		<!-- <variableExpression><![CDATA[DateFormat.getDateInstance(DateFormat.SHORT, $P{REPORT_LOCALE}).parse(($F{dy}).toString().substring(0,10))]]></variableExpression>-->
+		<!-- <variableExpression><![CDATA[($F{dy}).toString().substring(0,10)]]></variableExpression>-->
+	</variable>
+	<variable name="Destination" class="java.lang.String">
+		<variableExpression><![CDATA[$F{dd}]]></variableExpression>
+	</variable>
+	<variable name="MaxUtilisation" class="java.lang.Float">
+		<variableExpression><![CDATA[$F{max_util}]]></variableExpression>
+	</variable>	
+
+	<summary>
+		<band height="300">
+			<timeSeriesChart>
+				<chart isShowLegend="true" customizerClass="com.alcatel_lucent.nz.wnmsreport.chart.TimeSeriesIuRChartCustomiser">
+					<reportElement positionType="Float" x="0" y="0" width="535" height="300" style="style_charttitle"/>
+					<chartTitle position="Top">
+						<titleExpression><![CDATA[$P{rncname}+" VCC Utilisation IuR/"+$P{rate}+"/"+$P{plane}]]></titleExpression>
+					</chartTitle>
+					<!--
+					<chartSubtitle>
+						<font fontName="SansSerif" size="6"/>
+						<subtitleExpression><![CDATA["combined TMU/PC/RAB occupancy plot"]]></subtitleExpression>
+					</chartSubtitle>
+					-->
+					<chartLegend position="Bottom"><font size="8"/></chartLegend>
+				</chart>
+				<timeSeriesDataset>
+					<timeSeries>
+						<seriesExpression><![CDATA["VCC $P{plane} Thr"]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$V{Day}]]></timePeriodExpression>
+						<valueExpression><![CDATA[($P{plane}.equals('CP')?40:70)]]></valueExpression>
+					</timeSeries>
+					<timeSeries>
+						<seriesExpression><![CDATA[$V{Destination}]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$V{Day}]]></timePeriodExpression>
+						<valueExpression><![CDATA[$V{MaxUtilisation}]]></valueExpression>
+						<labelExpression><![CDATA[$V{Day}]]></labelExpression>
+					</timeSeries>
+				</timeSeriesDataset>
+				<timeSeriesPlot isShowLines="true" isShowShapes="false">
+					<plot labelRotation="90.0">
+						<seriesColor seriesOrder="0" color="#FF0000"/><!-- bright threshold red -->
+						
+						<seriesColor seriesOrder="1" color="#A6CEE3"/><!-- blues -->
+						<seriesColor seriesOrder="2" color="#1F78B4"/>
+						
+						<seriesColor seriesOrder="3" color="#B2DF8A"/><!-- greens -->
+						<seriesColor seriesOrder="4" color="#33A02C"/>
+						
+						<seriesColor seriesOrder="5" color="#FB9A99"/><!-- reds -->
+						<seriesColor seriesOrder="6" color="#E31A1C"/>
+						
+						<seriesColor seriesOrder="7" color="#FDBF6F"/><!-- oranges -->
+						<seriesColor seriesOrder="8" color="#FF7F00"/>
+						
+						<seriesColor seriesOrder="9" color="#CAB2D6"/><!-- purples -->
+						<seriesColor seriesOrder="10" color="#6A3D9A"/>
+						
+						<seriesColor seriesOrder="11" color="#FFFF99"/><!-- yellows -->
+						<seriesColor seriesOrder="12" color="#FFF200"/>
+						
+						<seriesColor seriesOrder="13" color="#5FC0CE"/><!-- teals -->
+						<seriesColor seriesOrder="14" color="#03899C"/>
+					</plot>
+					<timeAxisLabelExpression><![CDATA["Date"]]></timeAxisLabelExpression>
+					<timeAxisFormat>
+						<axisFormat>
+							<labelFont>
+								<font fontName="SansSerif" size="8"/>
+							</labelFont>
+							<tickLabelFont>
+								<font fontName="SansSerif" size="8"/>
+							</tickLabelFont>
+						</axisFormat>
+					</timeAxisFormat>
+					<valueAxisLabelExpression><![CDATA["% Utilisation"]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont>
+								<font fontName="SansSerif" size="8"/>
+							</labelFont>
+							<tickLabelFont>
+								<font fontName="SansSerif" size="8"/>
+							</tickLabelFont>
+						</axisFormat>
+					</valueAxisFormat>
+					<rangeAxisMinValueExpression>0</rangeAxisMinValueExpression>
+					<rangeAxisMaxValueExpression>100</rangeAxisMaxValueExpression>
+				</timeSeriesPlot>
+			</timeSeriesChart>
+		</band>
+	</summary>
+</jasperReport>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report_ipran" language="groovy" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="30" rightMargin="30" topMargin="30" bottomMargin="30">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="logo" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select id, ucast_pkts_mx, nucast_pkts_mx, xl_tt_amx, ratio from report_ipran_t order by id asc]]>
+	</queryString>
+	<field name="id" class="java.lang.String"/>
+	<field name="ucast_pkts_mx" class="java.lang.Double"/>
+	<field name="nucast_pkts_mx" class="java.lang.Double"/>
+	<field name="xl_tt_amx" class="java.lang.Double"/>
+	<field name="ratio" class="java.lang.Double"/>
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band height="50">
+			<staticText>
+				<reportElement x="0" y="0" width="300" height="24"/>
+				<textElement>
+					<font fontName="SansSerif" size="18" isBold="true" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[IPRAN Utilisation]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="24" width="300" height="18"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="368" y="0" width="167" height="41"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{logo}]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="25">
+			<staticText>
+				<reportElement x="390" y="0" width="50" height="25"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ratio]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="300" y="0" width="90" height="25"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Utilisation]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="210" y="0" width="90" height="25"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Non-unicast Packets]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="120" y="0" width="90" height="25"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Unicast Packets]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="120" height="25"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ID]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="14">
+			<textField>
+				<reportElement x="0" y="0" width="120" height="14"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{id}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0">
+				<reportElement x="120" y="0" width="90" height="14"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$F{ucast_pkts_mx}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0">
+				<reportElement x="210" y="0" width="90" height="14"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$F{nucast_pkts_mx}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement x="300" y="0" width="90" height="14"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$F{xl_tt_amx}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.0000">
+				<reportElement x="390" y="0" width="50" height="14"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$F{ratio}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,218 @@
+/*
+ * JR Primary CSS.
+ * Fonts : Headers-Avantgarde, Text-Helv
+ */
+
+.math		{
+	font-family: "Century Schoolbook", serif;
+}
+
+.math i		{
+	font-family: "Century Schoolbook", serif;
+	font-weight: bold;
+}
+
+.boldmath	{
+	font-family: "Century Schoolbook", serif;
+	font-weight: bold;
+}
+
+/* Sizes */
+
+small.xtiny	{
+	font-size : xx-small;
+}
+small.tiny	{
+	font-size : x-small;
+}
+small.scriptsize {
+	font-size : smaller;
+}
+small.footnotesize {
+	font-size : small;
+}
+
+big.xlarge	{
+	font-size : large;
+}
+big.xxlarge	{
+	font-size : x-large;
+}
+big.huge	{
+	font-size : larger;
+}
+big.xhuge	{
+	font-size : xx-large;
+}
+
+/*
+ * Document styles, colour and other...
+ */
+
+body		{
+	color: #111111;
+	background-color: #ffffff;
+	font-family: helvetica, sans-serif;
+	font-size: 70%;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	overflow: hidden;
+	height: 100%;
+	max-height: 100%;
+}
+
+#framecontent{
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: 250px;
+	height: 100%;
+	overflow: hidden;
+	background: #5A28AA;
+	color: #FFFFFF;
+}
+
+#maincontent{
+	position: fixed;
+	top: 0;
+	left: 250px;
+	right: 0;
+	bottom: 0;
+	overflow: auto;
+	background: #FFFFFF;
+	color: #000000;
+}
+
+.secondary{
+	margin: 15px;
+	color: #FFFFFF;
+}
+
+.primary{
+	margin: 15px;
+	color: #000000;
+}
+
+/* ie6 hack */
+* html body{padding: 0 0 0 200px;}
+* html #maincontent{height: 100%;width: 100%;}
+
+
+a {
+	text-decoration: none;
+}
+
+/* side bar light coloured links */
+a.light:active	{
+	color: #00FF00;
+}
+a.light:visited	{
+	color: #AAAAAA;
+}
+a.light:link		{
+	color: #FFFFFF;
+}
+
+/* default to dark coloured links */
+
+a:active	{
+	color: #FF00FF;
+}
+a:visited	{
+	color: #111111;
+}
+a:link		{
+	color: #000000;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: avantgarde, sans-serif;
+	font-weight: bold;
+	color: #000000;
+}
+
+h1.light, h2.light, h3.light, h4.light, h5.light, h6.light {
+	color: #FFFFFF;
+}
+
+h1 {
+	font-size: 180%;
+}
+
+h2		{
+	font-size: 150%
+}
+
+h3, h4		{
+	font-size: 110%;
+	font-style: italic;
+}
+
+code, tt {
+font-family: monospace;
+}
+
+var	{
+	font-family: times, serif;
+	font-style: italic;
+	font-weight: normal;
+}
+
+small		{
+	font-size: 60%;
+	font-weight: normal;
+}
+
+td {
+	vertical-align: top;
+}
+
+table.struct	{
+	color: #111111;
+	background-color: #dddddd;
+	border: 0em;
+	font-weight: normal;
+	font-family: avantgarde, sans-serif;
+	font-size: 100%;
+	padding: 2em 2em;
+	text-align: left;
+}
+table.struct td {
+	padding: 1em 1em;
+}
+
+table.info	{
+	color: #111111;
+	background-color: #aaaaaa;
+	border: 0em;
+	font-weight: normal;
+	font-family: avantgarde, sans-serif;
+	font-size: 100%;
+	padding: 0em 0em;
+	text-align: left;
+}
+table.info td {
+	padding: 0em 0em;
+}
+
+table.input	{
+	color: #222222;
+	background-color: #dddddd;
+	border: 1em;
+	font-weight: normal;
+	font-family: avantgarde, sans-serif;
+	font-size: 110%;
+	padding: 0em 0em;
+	text-align: left;
+}
+table.input td {
+	padding: 2px 4px;
+}
+
+ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}

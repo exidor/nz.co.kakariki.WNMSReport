@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE jasperTemplate
+  PUBLIC "-//JasperReports//DTD Template//EN"
+  "http://jasperreports.sourceforge.net/dtds/jaspertemplate.dtd">
+
+<jasperTemplate>
+<!-- Report Header -->
+	<style name="style_reportheader" fontName="SansSerif" isBold="true" fontSize="18" pdfFontName="Helvetica"/>
+<!-- Report Body/Text -->
+	<style name="style_reportbody" fontName="SansSerif" isBold="false" fontSize="10" pdfFontName="Helvetica"/>
+
+<!-- Table Header -->
+	<style name="style_tableheader" isDefault="true" fontName="SansSerif" isBold="true" fontSize="12" pdfFontName="Helvetica" hAlign="Left"/>
+<!-- Table Row -->
+	<style name="style_tablerow" isDefault="true" fontName="SansSerif" isBold="false" fontSize="10" pdfFontName="Helvetica" hAlign="Left"/>
+
+<!-- Chart Title -->
+	<style name="style_charttitle" fontName="SansSerif" isBold="false" fontSize="8" pdfFontName="Helvetica" hAlign="Center"/>
+<!-- Chart Subtitle-->
+	<style name="style_chartsubtitle" fontName="SansSerif" isBold="false" fontSize="6" pdfFontName="Helvetica" hAlign="Center"/>
+<!-- Chart Legend-->
+	<style name="style_chartlegend" fontName="SansSerif" isBold="false" fontSize="6" pdfFontName="Helvetica" hAlign="Center"/>
+<!-- Chart Axis-->
+	<style name="style_chartaxis" fontName="SansSerif" isBold="false" fontSize="4" pdfFontName="Helvetica" hAlign="Center"/>
+</jasperTemplate>
